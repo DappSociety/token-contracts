@@ -1,6 +1,8 @@
-// Use this file to easily deploy the contracts you're writing.
-
-// var Contract = artifacts.require('Contract');
+var Token = artifacts.require('Token');
+var Minter = artifacts.require('Minter');
+var Relay = artifacts.require('Relay');
 module.exports = function (deployer) {
-  // deployer.deploy(Contract);
+  deployer.deploy(Token);
+  deployer.deploy(Minter);
+  deployer.deploy(Relay);
 };
