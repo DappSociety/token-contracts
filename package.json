@@ -12,6 +12,8 @@
     "url": "https://github.com/DappSociety/token-contracts/issues"
   },
   "homepage": "https://github.com/DappSociety/token-contracts",
-  "dependencies": {},
+  "dependencies": {
+    "zeppelin-solidity": "1.7.0"
+  },
   "devDependencies": {}
 }
