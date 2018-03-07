@@ -1,0 +1,17 @@
+{
+  "name": "dappsociety-token-contracts",
+  "version": "0.1.0",
+  "description": "Fairly minted tokens for DappSociety",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DappSociety/token-contracts.git"
+  },
+  "author": "DappSociety",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DappSociety/token-contracts/issues"
+  },
+  "homepage": "https://github.com/DappSociety/token-contracts",
+  "dependencies": {},
+  "devDependencies": {}
+}
