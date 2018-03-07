@@ -17,7 +17,10 @@ contract Minter {
   function getMintableAmount(uint256 _lastMint, uint256 _inPool, uint256 _decimals) public view returns (uint256) {
     uint256 cap = 1000000 * 10**_decimals;
     uint256 amount = (now - _lastMint) * 100 * 10**_decimals;
-    if (_inPool + amount > cap) { return cap; }
+    if (_inPool + amount > cap) {
+      if (_inPool > cap) { return 0; }
+      return (cap - _inPool);
+    }
     return amount;
   }
 }
