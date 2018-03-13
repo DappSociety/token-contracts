@@ -1,8 +1,9 @@
-var Token = artifacts.require('Token');
-var Minter = artifacts.require('Minter');
-var Relay = artifacts.require('Relay');
+/**
+ * Swap real contracts in for Mock contracts for use outside `truffle test`
+ */
+let Token = artifacts.require('PoolMintedTokenMock');
+let Minter = artifacts.require('Minter');
 module.exports = function (deployer) {
   deployer.deploy(Token);
   deployer.deploy(Minter);
-  deployer.deploy(Relay);
 };
