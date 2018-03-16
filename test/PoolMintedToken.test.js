@@ -1,15 +1,18 @@
 let Token = artifacts.require("./PoolMintedTokenMock.sol");
 let Minter = artifacts.require("./Minter.sol");
 
+let token;
+let minter;
+
 contract('Token', async (accounts) => {
   it ('should set minter and mint 100 tokens per second', async () => {
+    token = await Token.deployed()
+    minter = await Minter.deployed()
+
     let initialSupply = 1000
     let secondsElapsed = 10
     let tokensPerSecond = 100
     let expectedAmount = initialSupply+secondsElapsed*tokensPerSecond
-
-    let token = await Token.deployed()
-    let minter = await Minter.deployed()
 
     await token.setMinterContract(minter.address)
     await token.mintNewTokens()
@@ -24,19 +27,16 @@ contract('Token', async (accounts) => {
   })
 
   it ('should set pool manager and transfer from pool', async () => {
-    let accountOne = accounts[0]
-    let accountTwo = accounts[1]
     let amountToTransfer = 1000
-    let token = await Token.deployed()
 
     // Get initial pool balance
     let initialPoolBalance = await token.balanceOf.call(token.address)
     initialPoolBalance = initialPoolBalance.toNumber()
 
-    await token.setPoolManager(accountOne, true)
-    await token.transferFromPool(accountTwo, amountToTransfer)
+    await token.setPoolManager(accounts[0], true)
+    await token.transferFromPool(accounts[1], amountToTransfer)
 
-    let accountTwoBalance = await token.balanceOf.call(accountTwo)
+    let accountTwoBalance = await token.balanceOf.call(accounts[1])
     accountTwoBalance = accountTwoBalance.toNumber()
     let poolBalance = await token.balanceOf.call(token.address)
     poolBalance = poolBalance.toNumber()
@@ -48,9 +48,6 @@ contract('Token', async (accounts) => {
   })
 
   it ('should unset pool manager and prevent unauthorized transfer from pool', async () => {
-    let accountOne = accounts[0];
-    let accountTwo = accounts[1];
-    let token = await Token.deployed();
 
     // Get initial pool balance
     let initialPoolBalance = await token.balanceOf.call(token.address);
@@ -58,13 +55,13 @@ contract('Token', async (accounts) => {
     assert.isTrue(initialPoolBalance > 0);
 
     // Sender must be a pool manager
-    await token.setPoolManager(accountOne, false);
-    try { await token.transferFromPool(accountTwo, initialPoolBalance) }
+    await token.setPoolManager(accounts[0], false);
+    try { await token.transferFromPool(accounts[1], initialPoolBalance) }
     catch (error) { /* expected */ }
 
     // Can't send more than the pool balance
-    await token.setPoolManager(accountOne, true);
-    try { await token.transferFromPool(accountTwo, initialPoolBalance+1) }
+    await token.setPoolManager(accounts[0], true);
+    try { await token.transferFromPool(accounts[1], initialPoolBalance+1) }
     catch (error) { /* expected */ }
 
     let poolBalance = await token.balanceOf.call(token.address);
@@ -72,5 +69,4 @@ contract('Token', async (accounts) => {
 
     assert.isTrue(poolBalance === initialPoolBalance)
   })
-
 });

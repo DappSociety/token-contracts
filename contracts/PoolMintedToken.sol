@@ -18,10 +18,18 @@ contract PoolMintedToken is StandardToken, Ownable {
   uint256 public constant initialSupply = 0; // recommend starting at 0
   uint256 public timeOfLastMint; // useful for calculating new supply
   Minter public minter; // allow for upgrading the minting algorithm
-  mapping (address => bool) poolManagers; // can transfer from the shared pool
+  /**
+   * These storage variables and their related function may be offloaded
+   * to a governance library, contract, or application. Then we would
+   * simply link to the governance contract from here.
+   */
+  mapping (address => bool) public poolManagers; // can transfer from the shared pool
+  mapping (address => bool) public poolDelegates; // can transfer from the shared pool
+  uint256 public poolDelegatesCount; // total number of pool delegates
 
   /* Events */
-  event PoolManagerUpdated(address _address, bool _status);
+  event PoolManagerUpdated(address who, bool status);
+  event PoolDelegateUpdated(address who, bool status);
 
   /**
    * @dev Constructor that gives initial tokens to the contract address
@@ -50,6 +58,27 @@ contract PoolMintedToken is StandardToken, Ownable {
     poolManagers[_address] = _status;
     PoolManagerUpdated(_address, _status);
     return true;
+  }
+
+  /**
+   * @dev Adds or removes permission to delegate tokens from the shared pool.
+   * @param _address The address to update in the mapping
+   * @param _status Boolean flag to enable/disable the address
+   */
+  function setPoolDelegate(address _address, bool _status) public onlyOwner returns (bool) {
+    poolDelegates[_address] = _status;
+    if (_status) poolDelegatesCount++;
+    else poolDelegatesCount--;
+    PoolDelegateUpdated(_address, _status);
+    return true;
+  }
+
+  /**
+   * @dev Checks if the address has delegation permission.
+   * @param _address The address to check
+   */
+  function isPoolDelegate(address _address) public view returns (bool) {
+    return poolDelegates[_address];
   }
 
   /**
